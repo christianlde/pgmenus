@@ -1,0 +1,6 @@
+Generate Distribution Files
+- py setup.py sdist bdist_wheel
+
+Upload Your Package to PyPI
+- pip install --user twine
+- twine upload dist/*

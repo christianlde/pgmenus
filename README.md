@@ -4,4 +4,4 @@ Packaging for making :
 - Buttons
 - Label
 
-inside [Pygame](https://pypi.org/search/?q=pygame)
+inside (Pygame)[https://pypi.org/search/?q=pygame]

@@ -1,4 +1,3 @@
-# Menus Stuff made by Christian D.
 import pygame as pg
 
 class Label():

@@ -85,7 +85,14 @@ class Slider():
 
 
     def draw(self, surface: pg.surface, font: pg.font.Font) -> None:
-        new_rect = self.rect
+        new_rect: pg.Rect = pg.Rect(
+            self.rect.x,
+            self.rect.y,
+            self.rect.width,
+            self.rect.height
+        ) # make a copy of the Rect instance --- to prevent unexpected behavior.
+        self.padding = 5
+
         if self.auto_size:
             if self.label != None:
                 text = font.render(
@@ -100,7 +107,6 @@ class Slider():
             new_rect.x -= new_rect.width//2
             new_rect.y -= new_rect.height//2
 
-        self.padding = 5
         # BG (Background)
         pg.draw.rect(
             surface,
@@ -122,7 +128,7 @@ class Slider():
         pg.draw.circle(
             surface,
             self.background_color,
-            (new_rect.x + new_rect.width * self.value/self.max_value, new_rect.y + new_rect.heiht/2),
+            (new_rect.x + new_rect.width * self.value/self.max_value, new_rect.y + new_rect.height/2),
             (new_rect.height - 2 * self.padding)/2
         )
         if self.label != None:

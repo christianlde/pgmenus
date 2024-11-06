@@ -7,7 +7,8 @@ class Label():
         self.rect:          pg.Rect     = rect
         self.centered:      bool        = centered
 
-    def draw(self, surface: pg.Surface, font: pg.font.Font, parent_rect: pg.Rect = None, center_text: bool = False):
+
+    def draw(self, surface: pg.Surface, font: pg.font.Font, parent_rect: pg.Rect = None, center_text: bool = False) -> None:
         text = font.render(
             self.text,
             True,
@@ -28,6 +29,7 @@ class Label():
         surface.blit(text, text_rect)
 
 
+
 class Button():
     def __init__(self, background_color: tuple|str, rect: pg.Rect, centered: bool = False, label: Label = None, center_text: bool = False, auto_size: bool = False, action: any = None) -> None:
         self.background_color:  tuple|str   = background_color
@@ -38,7 +40,8 @@ class Button():
         self.auto_size:         bool        = auto_size
         self.action:            any         = action
 
-    def draw(self, surface: pg.surface, font: pg.font.Font):
+
+    def draw(self, surface: pg.surface, font: pg.font.Font) -> None:
         new_rect = self.rect
         if self.auto_size:
             if self.label != None:
@@ -61,8 +64,10 @@ class Button():
         if self.label != None:
             self.label.draw(surface, font, self.rect, self.center_text)
 
-    def handle_action(self):
+
+    def handle_action(self) -> None:
         self.action()
+
 
 
 class Slider():
@@ -78,7 +83,8 @@ class Slider():
         self.min_value:         int         = 0
         self.max_value:         int         = 100
 
-    def draw(self, surface: pg.surface, font: pg.font.Font):
+
+    def draw(self, surface: pg.surface, font: pg.font.Font) -> None:
         new_rect = self.rect
         if self.auto_size:
             if self.label != None:
@@ -93,25 +99,47 @@ class Slider():
         if self.centered:
             new_rect.x -= new_rect.width//2
             new_rect.y -= new_rect.height//2
+
+        self.padding = 5
+        # BG (Background)
         pg.draw.rect(
             surface,
             self.background_color,
             new_rect
         )
+        # MG (Middleground)
         pg.draw.rect(
             surface,
-            'green',
+            'white',
             pg.Rect(
-                new_rect.x,
-                new_rect.y,
-                new_rect.width * self.value / self.max_value,
-                new_rect.height
+                new_rect.x + self.padding,
+                new_rect.y + self.padding,
+                new_rect.width - 2 * self.padding,
+                new_rect.height - 2 * self.padding
             )
+        )
+        # FG (Foreground) -> Handle
+        pg.draw.circle(
+            surface,
+            self.background_color,
+            (new_rect.x + new_rect.width * self.value/self.max_value, new_rect.y + new_rect.heiht/2),
+            (new_rect.height - 2 * self.padding)/2
         )
         if self.label != None:
             self.label.draw(surface, font, self.rect, self.center_text)
 
-    def handle_action(self):
-        self.action()
+
+    def handle_action(self) -> None:
+        self.action(self.value) # send the value to the action function.
+
 
     # update value
+    def update(self) -> None:
+        mouse_pos = mx, my = pg.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            # Mouse hovers over the slide
+            relative_pos = rel_x, rel_y = mx - self.rect.x, my - self.rect.y
+            value = rel_x / self.rect.width * 100 # in percentage - [0;100].
+            self.value = value # set the new acquired value.
+            self.handle_action()
+

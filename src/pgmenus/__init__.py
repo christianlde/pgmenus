@@ -71,7 +71,7 @@ class Button():
 
 
 class Slider():
-    def __init__(self, background_color: tuple|str, rect: pg.Rect, centered: bool = False, label: Label = None, center_text: bool = False, auto_size: bool = False, action: any = None) -> None:
+    def __init__(self, background_color: tuple|str, rect: pg.Rect, centered: bool = False, label: Label = None, center_text: bool = False, auto_size: bool = False, action: any = None, border_radius: int = 5) -> None:
         self.background_color:  tuple|str   = background_color
         self.rect:              pg.Rect     = rect
         self.centered:          bool        = centered
@@ -82,6 +82,8 @@ class Slider():
         self.value:             int         = 50
         self.min_value:         int         = 0
         self.max_value:         int         = 100
+
+        self.border_radius:     int         = border_radius
 
 
     def draw(self, surface: pg.surface, font: pg.font.Font) -> None:
@@ -111,7 +113,8 @@ class Slider():
         pg.draw.rect(
             surface,
             self.background_color,
-            new_rect
+            new_rect,
+            border_radius=self.border_radius
         )
         # MG (Middleground)
         pg.draw.rect(
@@ -122,17 +125,22 @@ class Slider():
                 new_rect.y + self.padding,
                 new_rect.width - 2 * self.padding,
                 new_rect.height - 2 * self.padding
-            )
+            ),
+            border_radius=self.border_radius
         )
         # FG (Foreground) -> Handle
         pg.draw.circle(
             surface,
             self.background_color,
-            (new_rect.x + new_rect.width * self.value/self.max_value, new_rect.y + new_rect.height/2),
+            (
+                new_rect.x + round(new_rect.width * self.value/self.max_value),
+                new_rect.y + new_rect.height/2
+            ),
             (new_rect.height - 2 * self.padding)/2
         )
+
         if self.label != None:
-            self.label.draw(surface, font, self.rect, self.center_text)
+            self.label.draw(surface, font, self.rect, self.center_text) # display text Label.
 
 
     def handle_action(self) -> None:

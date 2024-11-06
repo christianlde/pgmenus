@@ -2,10 +2,10 @@ import pygame as pg
 
 class Label():
     def __init__(self, text: str, font_color: tuple|str, rect: pg.Rect, centered: bool = False) -> None:
-        self.text: str = text
-        self.font_color: tuple|str = font_color
-        self.rect: pg.Rect = rect
-        self.centered: bool = centered
+        self.text:          str         = text
+        self.font_color:    tuple|str   = font_color
+        self.rect:          pg.Rect     = rect
+        self.centered:      bool        = centered
 
     def draw(self, surface: pg.Surface, font: pg.font.Font, parent_rect: pg.Rect = None, center_text: bool = False):
         text = font.render(
@@ -30,13 +30,13 @@ class Label():
 
 class Button():
     def __init__(self, background_color: tuple|str, rect: pg.Rect, centered: bool = False, label: Label = None, center_text: bool = False, auto_size: bool = False, action: any = None) -> None:
-        self.background_color: tuple|str = background_color
-        self.rect: pg.Rect = rect
-        self.centered: bool = centered
-        self.label: Label|None = label
-        self.center_text: bool = center_text
-        self.auto_size: bool = auto_size
-        self.action: any = action
+        self.background_color:  tuple|str   = background_color
+        self.rect:              pg.Rect     = rect
+        self.centered:          bool        = centered
+        self.label:             Label|None  = label
+        self.center_text:       bool        = center_text
+        self.auto_size:         bool        = auto_size
+        self.action:            any         = action
 
     def draw(self, surface: pg.surface, font: pg.font.Font):
         new_rect = self.rect
@@ -64,3 +64,54 @@ class Button():
     def handle_action(self):
         self.action()
 
+
+class Slider():
+    def __init__(self, background_color: tuple|str, rect: pg.Rect, centered: bool = False, label: Label = None, center_text: bool = False, auto_size: bool = False, action: any = None) -> None:
+        self.background_color:  tuple|str   = background_color
+        self.rect:              pg.Rect     = rect
+        self.centered:          bool        = centered
+        self.label:             Label|None  = label
+        self.center_text:       bool        = center_text
+        self.auto_size:         bool        = auto_size
+        self.action:            any         = action
+        self.value:             int         = 50
+        self.min_value:         int         = 0
+        self.max_value:         int         = 100
+
+    def draw(self, surface: pg.surface, font: pg.font.Font):
+        new_rect = self.rect
+        if self.auto_size:
+            if self.label != None:
+                text = font.render(
+                    self.label.text,
+                    True,
+                    self.label.font_color
+                )
+                text_rect = text.get_rect()
+                new_rect.width = text_rect.width + 10 ####
+
+        if self.centered:
+            new_rect.x -= new_rect.width//2
+            new_rect.y -= new_rect.height//2
+        pg.draw.rect(
+            surface,
+            self.background_color,
+            new_rect
+        )
+        pg.draw.rect(
+            surface,
+            'green',
+            pg.Rect(
+                new_rect.x,
+                new_rect.y,
+                new_rect.width * self.value / self.max_value,
+                new_rect.height
+            )
+        )
+        if self.label != None:
+            self.label.draw(surface, font, self.rect, self.center_text)
+
+    def handle_action(self):
+        self.action()
+
+    # update value

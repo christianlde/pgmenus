@@ -99,21 +99,22 @@ class Button():
         if self.label != None:
             self.label.draw(surface, font, self.collision_rect, self.center_text)
 
-    def handle_action(self) -> None:
+    def handle_action(self) -> str|int|float:
         '''Handle Action.'''
         if self.action_value != None:
             self.action(self.action_value)
         else:
             self.action()
+        return self.action_value
 
-    def update(self) -> None:
+    def update(self) -> str|int|float|None:
         '''Handle action.'''
         mouse_pos = mx, my = pg.mouse.get_pos()
         if self.collision_rect.collidepoint(mouse_pos):
             # mouse hovers.
             if pg.mouse.get_pressed()[0]:
                 # mouse left click.
-                self.handle_action()
+                return self.handle_action()
 
 
 class Slider():
@@ -220,8 +221,7 @@ class Dropdown():
         self.auto_size:         bool                    = auto_size
         self.action:            any                     = action
         self.list_of_values:    list[str|int|float]     = list_of_values
-        self.index:             int                     = 0
-
+        self.index:             int                     = 0 # Current To-Be-Displayed value index.
         self.ele_height:        int                     = 35 # arbitrary value.
         self.collision_rect:    pg.Rect                 = pg.Rect(rect) # Handels Collision detection.
         self.item_collision_rect: pg.Rect               = pg.Rect(
@@ -230,12 +230,9 @@ class Dropdown():
             self.collision_rect.width,
             self.ele_height * len(self.list_of_values),
         )
-        self.items:             list[Button]            = [ ]
-
+        self.items:             list[Button]            = [ ] # Available choices inside the Dropdown.
         self.border_radius:     int                     = border_radius
         self.hovered:           bool                    = False # Current State.
-        self.delay:             int                     = 0 # Delay in milliseconds.
-        self.max_delay:         int                     = 400 # Maximum delay in milliseconds.
 
     def draw(self, surface: pg.surface, font: pg.font.Font) -> None:
         new_rect: pg.Rect = pg.Rect(self.rect) # make a copy of the Rect instance --- to prevent unexpected behavior.
@@ -256,7 +253,6 @@ class Dropdown():
             new_rect.y -= new_rect.height//2
 
         self.collision_rect: pg.Rect = pg.Rect(new_rect) # Update the collision rect.
-
         # BG (Background)
         pg.draw.rect(
             surface,
@@ -360,15 +356,14 @@ class Dropdown():
     # def handle_action(self) -> None:
     #     self.action(self.value) # send the value to the action function.
 
-    def update(self) -> None: # update value
+    def update(self) -> None:
+        '''Update value.'''
         mouse_pos = mx, my = pg.mouse.get_pos()
         if self.collision_rect.collidepoint(mouse_pos) or (self.item_collision_rect.collidepoint(mouse_pos) and self.hovered):
             # Mouse hovers over the slide.
             if pg.mouse.get_pressed()[0]:
                 # Mouse left click press.
-                if self.delay == 0:
-                    self.delay = self.max_delay
-                    self.hovered = not self.hovered
+                self.hovered = True
         else:
             self.hovered = False
 
@@ -381,10 +376,9 @@ class Dropdown():
             # self.handle_action()
 
         for i in self.items:
-            i.update() # Update its Buttons items.
-            self.label.text = i.action_value
-
-        self.delay = max(0, self.delay - 1) # Update delay.
+            result = i.update()
+            if result != None: # Update its Buttons items.
+                self.label.text = result
 
 
 class Slide():

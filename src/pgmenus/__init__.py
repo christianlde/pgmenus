@@ -316,7 +316,7 @@ class Dropdown():
             self.collision_rect.x,
             self.collision_rect.y,
             self.collision_rect.width,
-            self.ele_height * len(self.list_of_values),
+            self.collision_rect.height + self.ele_height * len(self.list_of_values),
         )
 
         # Display hover.

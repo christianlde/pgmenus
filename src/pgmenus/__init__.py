@@ -2,7 +2,7 @@ import pygame as pg
 
 class Label():
     '''Display easily text .'''
-    def __init__(self, text: str, font_color: tuple|str, rect: pg.Rect, centered: bool = False) -> None:
+    def __init__(self, text: str, font_color: tuple|str, rect: pg.Rect = pg.Rect(0, 0, 0, 0), centered: bool = False) -> None:
         self.text:          str         = text
         self.font_color:    tuple|str   = font_color
         self.rect:          pg.Rect     = rect

@@ -385,3 +385,58 @@ class Dropdown():
             self.label.text = i.action_value
 
         self.delay = max(0, self.delay - 1) # Update delay.
+
+
+class Slide():
+    '''A Slide for a Slide Show.'''
+    def __init__(self, background_color: str|tuple) -> None:
+        self.background_color: str|tuple = background_color
+        self.padding = 10 # maybe in the parent in the future.
+
+    def draw(self, surface: pg.Surface, parent_rect: pg.Rect, offset_x: int|float) -> None:
+        # create a sub rect from parent rect.
+        child_rect: pg.Rect = pg.Rect(
+            parent_rect.x + self.padding,
+            parent_rect.y + self.padding,
+            parent_rect.width - 2 * self.padding,
+            parent_rect.height - 2 * self.padding,
+        )
+        # apply offset x.
+        child_rect.x += offset_x
+        # draw child rect.
+        pg.draw.rect(
+            surface,
+            self.background_color,
+            child_rect,
+        )
+
+
+class SlideShow():
+    '''Create an easy Slide Show with multiple slides.'''
+    def __init__(self, slides: list[Slide], background_color: str|tuple, rect: pg.Rect) -> None:
+        self.slides:                list[Slide]     = slides
+        self.background_color:      str|tuple       = background_color
+        self.rect:                  pg.Rect         = pg.Rect(rect)
+        self.offset_x:              float           = 0.0 # Current offset animation position.
+        self.offset_speed:          float           = 10.0 # Speed of offset animation.
+        self.offset_direction:      int             = 1 # Direction of offset animation : either -1 or 1.
+
+    def draw(self, surface: pg.Surface) -> None:
+        pg.draw.rect(
+            surface,
+            self.background_color,
+            self.rect
+        )
+        # and on top draw the slides.
+        child_offset: float = 0
+        for slide in self.slides:
+            slide.draw(surface, self.rect, child_offset)
+            child_offset += self.rect.width # Spacing offset.
+
+    def update(self, delta_time: float) -> None:
+        self.offset_x += self.offset_direction * self.offset_speed * delta_time
+        max_offset: float = (len(self.slides) * self.rect.width) / 2
+        if self.offset_x > max_offset: # If too much to the right.
+            self.offset_x = - max_offset # Set left.
+        elif self.offset_x < max_offset: # If too much to the left.
+            self.offset_x = max_offset # Set right.

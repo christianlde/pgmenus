@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pgmenus"
-version = "0.0.34"
+version = "0.0.35"
 authors = [
   { name="Chris D", email="author@example.com" },
 ]
